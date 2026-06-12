@@ -1,6 +1,6 @@
 {
   "name": "for-e-envelope-print-system",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "build": "mkdir -p dist && cp -r public/* dist/"
