@@ -199,15 +199,67 @@
 
     @media(max-width:980px){main{grid-template-columns:1fr}.preview-wrap{min-height:auto}.paper-stage{padding:12px}#envelope{transform-origin:top left;}}
     @media print{
-      @page{size:var(--envelope-w) var(--envelope-h);margin:0}
+      @page{size:auto;margin:0}
       *{box-shadow:none!important}
-      html,body{width:var(--envelope-w)!important;min-height:var(--envelope-h)!important;margin:0!important;padding:0!important;background:white!important;overflow:visible!important;}
+      html,body{
+        margin:0!important;
+        padding:0!important;
+        background:white!important;
+        overflow:visible!important;
+      }
       header,main,.preview-wrap,.paper-stage,.toolbar,.scale-note{display:none!important;}
       #printArea{display:block!important;width:var(--envelope-w)!important;margin:0!important;padding:0!important;background:white!important;}
       .print-page{display:block!important;width:var(--envelope-w)!important;height:var(--envelope-h)!important;margin:0!important;padding:0!important;border:0!important;background:white!important;overflow:hidden!important;}
       .envelope-bg{display:none!important;}
       .address-block{color:#000!important;}
     }
+  
+    @media print{
+      @page{size:auto;margin:0}
+      html,body{
+        margin:0!important;
+        padding:0!important;
+        background:white!important;
+        overflow:visible!important;
+      }
+      header,
+      main,
+      .preview-wrap,
+      .paper-stage,
+      .toolbar,
+      .scale-note{
+        display:none!important;
+      }
+      #printArea{
+        display:block!important;
+        margin:0!important;
+        padding:0!important;
+        background:white!important;
+      }
+      .print-page{
+        display:block!important;
+        width:var(--envelope-w)!important;
+        height:var(--envelope-h)!important;
+        margin:0!important;
+        padding:0!important;
+        border:0!important;
+        background:white!important;
+        overflow:hidden!important;
+        page-break-after:always!important;
+        break-after:page!important;
+      }
+      .print-page:last-child{
+        page-break-after:auto!important;
+        break-after:auto!important;
+      }
+      .envelope-bg{
+        display:none!important;
+      }
+      .address-block{
+        color:#000!important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -327,13 +379,14 @@
       <div class="section">
         <div class="actions">
           <button type="button" id="printBtn">列印信封</button>
+          <button type="button" class="secondary" id="testPrintBtn">測試列印</button>
           <button type="button" class="secondary" id="resetBtn">清空內容</button>
           <button type="button" class="secondary" id="exportTemplates">匯出範本</button>
           <label class="secondary" style="display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;background:#eef2f7">
             匯入範本<input type="file" id="importTemplates" accept="application/json" style="display:none">
           </label>
         </div>
-        <div class="status">正式列印只會印出收件文字，不會把背景一起印出。</div>
+        <div class="status">影印機安全版：系統不再強制指定紙張大小，避免影印機驅動拒絕列印；正式列印只會印文字，不印背景。請在列印視窗確認「實際大小 / 100%」。</div>
       </div>
     </section>
 
@@ -505,12 +558,27 @@
     window.print();
   }
 
+
+  function testPrint(){
+    const printArea=$('printArea');
+    if(printArea){
+      printArea.innerHTML=
+        '<div class="print-page"><div class="address-block" style="top:40%;"><div class="address-inner">'+
+        '<div class="zip-to-line">TO：測試列印</div>'+
+        '<div class="line-address">影印機測試列印</div>'+
+        '<div class="line-company">FOR-e信封列印系統</div>'+
+        '</div></div></div>';
+    }
+    window.print();
+  }
+
   document.addEventListener('input',e=>{if(fields.includes(e.target.id)) update();});
   document.addEventListener('click',e=>{if(e.target.dataset.lookupDest) lookupDestZip(e.target.dataset.lookupDest);});
   $('size').addEventListener('change',applySizeDefaults);
   $('lookupZip').addEventListener('click',lookupZip);
   $('clearZip').addEventListener('click',()=>{$('zipcode').value=''; update();});
   $('printBtn').addEventListener('click',printEnvelope);
+  if($('testPrintBtn')) $('testPrintBtn').addEventListener('click',testPrint);
   $('resetBtn').addEventListener('click',()=>{['zipcode','address','company','recipient','memo','templateName','d1_company','d1_address','d1_zipcode','d1_recipient','d2_company','d2_address','d2_zipcode','d2_recipient','d3_company','d3_address','d3_zipcode','d3_recipient'].forEach(id=>$(id).value=''); $('printMode').value='single'; $('templateSelect').value=''; update();});
   $('saveTemplate').addEventListener('click',saveTemplate);
   $('exportTemplates').addEventListener('click',exportTemplates);
