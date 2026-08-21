@@ -1,8 +1,8 @@
 {
   "name": "for-e-envelope-print-system",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "private": true,
   "scripts": {
-    "build": "node build.js"
+    "build": "mkdir -p dist && cp -r public/* dist/"
   }
 }
