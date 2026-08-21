@@ -1,0 +1,1 @@
+V1.3.1: build document system into full static index.html at deploy time to avoid browser-side decompression/iframe loading stalls.
