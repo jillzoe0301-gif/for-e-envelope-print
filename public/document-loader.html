@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOR-e 文件管理</title>
+<style>html,body{margin:0;height:100%;background:#f4f6f8;font-family:"Microsoft JhengHei",Arial,sans-serif}.loading{height:100%;display:grid;place-items:center;color:#6b7280;font-size:14px}</style>
+</head>
+<body><div class="loading">載入文件管理系統中…</div>
+<script>
+(async()=>{
+  try{
+    const parts=await Promise.all([0,1,2].map(async i=>{
+      const r=await fetch(`/doc-bundle-${i}.txt`,{cache:'no-store'});
+      if(!r.ok) throw new Error('bundle '+i);
+      return (await r.text()).trim();
+    }));
+    const binary=atob(parts.join(''));
+    const bytes=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+    const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    let html=await new Response(stream).text();
+    const requested=new URLSearchParams(location.search).get('view');
+    const view=['seal','return','escape','history'].includes(requested)?requested:'seal';
+    html=html.replace('</style>','.site-header{display:none!important}.topbar{top:0!important}</style>');
+    html=html.replace("let state = {view:'seal',",`let state = {view:'${view}',`);
+    html=html.replace('</body>',`<script>window.switchDocView=function(v){if(['seal','return','escape','history'].includes(v)){state.view=v;state.editingId=null;app();}};window.parent.postMessage({type:'for-e-doc-ready'},'*');<\/script></body>`);
+    document.open();document.write(html);document.close();
+  }catch(err){
+    document.body.innerHTML='<div class="loading">文件管理系統載入失敗，請重新整理頁面。</div>';
+    console.error(err);
+  }
+})();
+</script>
+</body>
+</html>
