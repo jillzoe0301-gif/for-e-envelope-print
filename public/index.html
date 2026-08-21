@@ -1,1 +1,54 @@
-__FROM_FILE__
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOR-e 文件／信封列印系統</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{--brand:#ea7a1f;--nav:#1f2937;--hover:#313b4b;--text:#dfe5ec}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;background:#f4f6f8}body{display:flex;flex-direction:column;overflow:hidden}
+.header{background:var(--nav);color:#fff;flex:0 0 auto;box-shadow:0 4px 16px rgba(31,41,55,.16);z-index:30}.header-in{max-width:1640px;margin:auto;padding:11px 24px;display:flex;align-items:center;gap:22px}.brand{display:flex;align-items:center;gap:10px;min-width:218px;flex:0 0 auto}.mark{width:36px;height:36px;border-radius:12px;background:var(--brand);display:grid;place-items:center;font-weight:900}.brand h1{font-size:16px;margin:0}.brand small{display:block;color:#b8c0cc;margin-top:2px;font-size:11px}.nav{display:flex;align-items:center;gap:6px;min-width:0;overflow-x:auto;flex:1}.nav button{border:0;background:transparent;color:var(--text);padding:10px 13px;border-radius:9px;font:600 14px inherit;white-space:nowrap;cursor:pointer}.nav button:hover{background:var(--hover);color:#fff}.nav button.active{background:var(--brand);color:#fff}.workspace{position:relative;flex:1;min-height:0;background:#fff}.workspace iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}.workspace iframe.hidden{visibility:hidden;pointer-events:none}.loading{position:absolute;inset:0;display:grid;place-items:center;color:#6b7280;font-size:14px;background:#f4f6f8;z-index:2}.loading.hidden{display:none}
+@media(max-width:980px){.header-in{align-items:flex-start;flex-wrap:wrap;gap:10px}.brand{min-width:180px}.nav{order:2;width:100%;flex-basis:100%}}
+@media(max-width:780px){.header-in{padding:10px 14px}.nav button{padding:9px 10px;font-size:13px}}
+</style>
+</head>
+<body>
+<header class="header"><div class="header-in">
+  <div class="brand"><div class="mark">F</div><div><h1>FOR-e 文件管理</h1><small>用印／還函／逃跑／信封列印</small></div></div>
+  <nav class="nav" id="nav">
+    <button data-view="seal">◎ 用印申請明細</button>
+    <button data-view="return">▤ 客戶還函簽收單</button>
+    <button data-view="escape">↪ 逃跑簽收單</button>
+    <button data-view="envelope">✉ 信封列印</button>
+    <button data-view="history">◷ 歷史紀錄</button>
+  </nav>
+</div></header>
+<main class="workspace">
+  <div class="loading" id="loading">載入系統中…</div>
+  <iframe id="docFrame" src="/document-loader.html?view=seal" title="FOR-e 文件管理"></iframe>
+  <iframe id="envelopeFrame" class="hidden" src="about:blank" data-src="/for-e-envelope-print-system.html" title="FOR-e 信封列印"></iframe>
+</main>
+<script>
+const allowed=['seal','return','escape','envelope','history'];
+const nav=document.getElementById('nav'),docFrame=document.getElementById('docFrame'),envelopeFrame=document.getElementById('envelopeFrame'),loading=document.getElementById('loading');
+let docReady=false,pendingView='seal',envelopeLoaded=false;
+function currentFromUrl(){const v=new URLSearchParams(location.search).get('view');return allowed.includes(v)?v:'seal'}
+function markActive(v){nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.view===v))}
+function showView(v,push=true){if(!allowed.includes(v))v='seal';markActive(v);if(push)history.replaceState(null,'',v==='seal'?location.pathname:`${location.pathname}?view=${v}`);
+  if(v==='envelope'){
+    docFrame.classList.add('hidden');envelopeFrame.classList.remove('hidden');
+    if(!envelopeLoaded){loading.classList.remove('hidden');envelopeFrame.src=envelopeFrame.dataset.src;envelopeLoaded=true}else loading.classList.add('hidden');
+  }else{
+    envelopeFrame.classList.add('hidden');docFrame.classList.remove('hidden');pendingView=v;
+    if(docReady&&docFrame.contentWindow&&typeof docFrame.contentWindow.switchDocView==='function'){docFrame.contentWindow.switchDocView(v);loading.classList.add('hidden')}else loading.classList.remove('hidden');
+  }
+}
+nav.addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(b)showView(b.dataset.view)});
+window.addEventListener('message',e=>{if(e.source===docFrame.contentWindow&&e.data&&e.data.type==='for-e-doc-ready'){docReady=true;if(pendingView&&typeof docFrame.contentWindow.switchDocView==='function')docFrame.contentWindow.switchDocView(pendingView);if(!docFrame.classList.contains('hidden'))loading.classList.add('hidden')}});
+envelopeFrame.addEventListener('load',()=>{if(envelopeLoaded&&!envelopeFrame.classList.contains('hidden'))loading.classList.add('hidden')});
+window.addEventListener('popstate',()=>showView(currentFromUrl(),false));
+showView(currentFromUrl(),false);
+</script>
+</body>
+</html>
