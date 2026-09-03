@@ -23,40 +23,17 @@ const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
 <rect x="72" y="100" width="18" height="25" rx="4" fill="#f7a34e"/><rect x="67" y="122" width="28" height="8" rx="4" fill="#b85b0a"/>
 <text x="90" y="165" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="800" fill="#1f2937">FOR-<tspan fill="#f58220">e</tspan></text>
 </svg>`;
-
-const headerSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200">
-<rect width="1000" height="200" fill="#fff"/>
-<path d="M0 0h620l95 100-95 100H0z" fill="#fff"/>
-<path d="M620 0l78 83-78 117h380V0z" fill="#f55b09"/>
-<g transform="translate(26 34)" fill="none" stroke="#f55b09" stroke-width="8">
-<ellipse cx="78" cy="65" rx="72" ry="54"/>
-<path d="M9 93C36 37 62 14 112 7M20 106C58 68 88 46 138 35"/>
-</g>
-<g fill="#f55b09" transform="translate(64 60)"><circle cx="0" cy="0" r="10"/><circle cx="33" cy="5" r="10"/><circle cx="66" cy="0" r="10"/><path d="M-8 16h16l-5 38h-20zM25 21h16l-5 38H16zM58 16h16l-5 38H49z"/></g>
-<text x="185" y="64" font-family="Microsoft JhengHei,Arial" font-size="40" letter-spacing="12" fill="#f55b09">灃禾集團</text>
-<line x1="185" y1="78" x2="555" y2="78" stroke="#f55b09" stroke-width="2"/>
-<text x="185" y="125" font-family="Arial" font-size="36" letter-spacing="4" fill="#f55b09">FORWARD GROUP</text>
-<text x="188" y="162" font-family="Microsoft JhengHei,Arial" font-size="21" fill="#333">■ 顧問輔導  ■ 人力資源  ■ 職能訓練</text>
-<g fill="#fff" font-family="Arial">
-<text x="720" y="55" font-size="24" font-weight="700">Email : service@forwardhrm.com.tw</text>
-<text x="720" y="92" font-size="24" font-weight="700">Website : www.forwardhrm.com.tw</text>
-<text x="720" y="130" font-size="24">Tel : 03-357-7001</text>
-<text x="720" y="168" font-size="24">Fax : 03-357-8277</text>
-</g>
-</svg>`;
 const brandLogo = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(logoSvg);
-const companyHeaderImage = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(headerSvg);
+const headerB64 = fs.readFileSync(path.join(publicDir, 'forward-group-header.b64'), 'utf8').trim();
+const companyHeaderImage = 'data:image/jpeg;base64,' + headerB64;
 
 const css = `
 .brand{display:flex!important;align-items:center!important;gap:12px!important}
 .brand-mark{width:54px!important;height:54px!important;border-radius:16px!important;background:#fff!important;display:grid!important;place-items:center!important;overflow:hidden!important;box-shadow:0 2px 10px rgba(0,0,0,.12)!important;flex:0 0 54px!important}
 .brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
 .brand h1{font-size:18px!important;line-height:1.2!important}
-.print-header{margin-bottom:10px}
-.print-header img{display:block;width:100%;height:auto}
-.check-row{display:flex!important;align-items:center!important;gap:6px 12px!important;flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:2px!important}
-.check-row label{display:inline-flex!important;align-items:center!important;gap:4px!important;white-space:nowrap!important;font-size:11px!important;line-height:1!important;flex:0 0 auto!important}
-.check-row input[type="checkbox"]{width:13px!important;height:13px!important;min-width:13px!important;min-height:13px!important;flex:0 0 13px!important;margin:0!important}
+.print-header{margin:0 0 10px 0;width:100%}
+.print-header img{display:block;width:100%;height:auto;object-fit:contain}
 `;
 html = html.replace('</style>', css + '\n</style>');
 html = html.replace(/<title>[^<]*<\/title>/, '<title>FOR-e 用印／還函／逃跑／信封列印</title>');
@@ -77,4 +54,4 @@ html = html.replace(
   'return `<div class="paper">${printHeader()}<div class="seal-logo">FOR-e DOCUMENT CONTROL</div><table class="doc-table seal-intro">'
 );
 fs.writeFileSync(indexPath, html, 'utf8');
-console.log(`Built FOR-e V1.5: ${html.length} bytes`);
+console.log(`Built FOR-e branded base: ${html.length} bytes`);
