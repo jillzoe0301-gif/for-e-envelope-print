@@ -1,0 +1,1 @@
+Using static JPG asset for document header.
