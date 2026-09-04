@@ -1,6 +1,6 @@
 {
   "name": "for-e-envelope-print-system",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "private": true,
   "scripts": {
     "build": "node build.js && node v16-patch.js && node v16-header-fix.js && node v17-envelope-address-patch.js && node v171-envelope-category-patch.js && node v172-envelope-employer-patch.js"
