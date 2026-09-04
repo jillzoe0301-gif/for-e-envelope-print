@@ -3,8 +3,9 @@ const path = require('path');
 const crypto = require('crypto');
 
 const root = __dirname;
-const chunkPaths = [0, 1, 2, 3, 4].map((index) =>
-  path.join(root, `header-b64-${index}.txt`)
+const chunkNames = ['0a', '0b', '1', '2', '3', '4'];
+const chunkPaths = chunkNames.map((name) =>
+  path.join(root, `header-b64-${name}.txt`)
 );
 
 for (const chunkPath of chunkPaths) {
@@ -18,12 +19,17 @@ const headerBase64 = chunkPaths
   .join('');
 const headerBytes = Buffer.from(headerBase64, 'base64');
 const headerSha256 = crypto.createHash('sha256').update(headerBytes).digest('hex');
+const expectedBase64Length = 23888;
 const expectedLength = 17915;
 const expectedSha256 = '96043db465ead52a07bd65fd8bd87e1884374432b84af0c9c7de0e54435bac7a';
 
-if (headerBytes.length !== expectedLength || headerSha256 !== expectedSha256) {
+if (
+  headerBase64.length !== expectedBase64Length ||
+  headerBytes.length !== expectedLength ||
+  headerSha256 !== expectedSha256
+) {
   throw new Error(
-    `Header image verification failed: ${headerBytes.length} bytes, sha256=${headerSha256}`
+    `Header image verification failed: base64=${headerBase64.length}, bytes=${headerBytes.length}, sha256=${headerSha256}`
   );
 }
 
@@ -54,6 +60,7 @@ const headerCss = `
   overflow: visible !important;
   background: transparent !important;
   line-height: 0 !important;
+  border: 0 !important;
 }
 .paper .print-header img,
 .print-header img {
@@ -61,15 +68,20 @@ const headerCss = `
   position: static !important;
   width: 100% !important;
   height: auto !important;
+  min-width: 0 !important;
   min-height: 0 !important;
+  max-width: 100% !important;
   max-height: none !important;
-  aspect-ratio: 720 / 86 !important;
+  aspect-ratio: auto !important;
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
   object-fit: contain !important;
   object-position: center top !important;
   background: transparent !important;
+  clip: auto !important;
+  clip-path: none !important;
+  transform: none !important;
 }
 /* FOR-E HEADER FULL DISPLAY END */
 `;
@@ -148,5 +160,5 @@ for (const relativePath of ['dist/index.html', 'public/index.html']) {
 }
 
 console.log(
-  `Embedded verified Forward Group header: ${headerBytes.length} bytes, sha256=${headerSha256}`
+  `Embedded verified Forward Group header: base64=${headerBase64.length}, bytes=${headerBytes.length}, sha256=${headerSha256}`
 );
