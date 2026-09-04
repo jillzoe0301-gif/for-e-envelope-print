@@ -32,6 +32,8 @@ const css = `
 .brand-mark{width:54px!important;height:54px!important;border-radius:16px!important;background:#fff!important;display:grid!important;place-items:center!important;overflow:hidden!important;box-shadow:0 2px 10px rgba(0,0,0,.12)!important;flex:0 0 54px!important}
 .brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
 .brand h1{font-size:18px!important;line-height:1.2!important}
+.top-nav .nav-icon{display:none!important}
+.top-nav .nav-btn{gap:0!important}
 .print-header{margin:0 0 10px 0;width:100%}
 .print-header img{display:block;width:100%;height:auto;object-fit:contain}
 `;
@@ -54,4 +56,4 @@ html = html.replace(
   'return `<div class="paper">${printHeader()}<div class="seal-logo">FOR-e DOCUMENT CONTROL</div><table class="doc-table seal-intro">'
 );
 fs.writeFileSync(indexPath, html, 'utf8');
-console.log(`Built FOR-e branded base: ${html.length} bytes`);
+console.log(`Built FOR-e branded base without top-navigation icons: ${html.length} bytes`);
