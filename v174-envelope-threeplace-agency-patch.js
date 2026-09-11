@@ -467,14 +467,14 @@ const renderFunction = `function renderTemplates(){
         return true;
       });
 
-    select.innerHTML='<option value="">選擇範本'+(keyword ? `（找到 ${filtered.length} 筆）` : '')+'</option>'+filtered.map(({t,i})=>{
+    select.innerHTML='<option value="">選擇範本'+(keyword ? '（找到 '+filtered.length+' 筆）' : '')+'</option>'+filtered.map(({t,i})=>{
       const mode=templateModeValue(t);
       const d=(t&&t.data)||{};
       const builtin=t.builtin ? '★' : '';
       if(mode!=='single'){
         const title=threePlaceTemplateName(d,t.name||'');
         const destinations=templateDestinationNames(t).join('／');
-        return `<option value="${i}">${builtin}【三處通報】${esc(title)}${destinations ? '｜' + esc(destinations) : ''}</option>`;
+        return '<option value="'+i+'">'+builtin+'【三處通報】'+esc(title)+(destinations ? '｜'+esc(destinations) : '')+'</option>';
       }
       const tag=templateCategoryLabel(t);
       const title=String(t.name||'未命名範本');
@@ -485,7 +485,7 @@ const renderFunction = `function renderTemplates(){
       if(recipient && !title.includes(recipient)) sub=recipient;
       else if(company && !title.includes(company)) sub=company;
       else sub=address;
-      return `<option value="${i}">${builtin}【${esc(tag)}】${esc(title)}${sub ? '｜' + esc(sub) : ''}</option>`;
+      return '<option value="'+i+'">'+builtin+'【'+esc(tag)+'】'+esc(title)+(sub ? '｜'+esc(sub) : '')+'</option>';
     }).join('');
     if(current && list[Number(current)] && (!keyword || filtered.some(x=>String(x.i)===String(current)))) select.value=current;
   }`;
